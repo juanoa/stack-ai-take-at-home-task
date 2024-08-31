@@ -3,7 +3,7 @@ import { fetchStackAi } from "@/modules/commons/infrastructure/stack-ai/fetch-st
 import { Resource } from "@/modules/resources/domain/Resource";
 
 const PATH =
-  "https://api.stack-ai.com/connections/:connectionId/resources?resource_id=:resourceId";
+  "/connections/:connectionId/resources/children?resource_id=:resourceId";
 
 export const getResourcesByConnectionAndResourceFromStackAi = async (
   connectionId: Connection["id"],
@@ -21,14 +21,35 @@ export const getResourcesByConnectionAndResourceFromStackAi = async (
       }
       return response.json();
     })
-    .then((connections) => {
-      const connectionDtos = connections as Array<any>;
-      return connectionDtos.map((connectionDto) => {
-        return {
-          id: connectionDto.connection_id,
-          name: connectionDto.name,
-          provider: connectionDto.connection_provider,
-        };
-      });
+    .then(async (resources) => {
+      // TODO: Extract
+      const resourcesDtos = resources as Array<any>;
+      if (!resourcesDtos.length) {
+        return [];
+      }
+      return await Promise.all(
+        resourcesDtos.map(async (resourceDto) => {
+          const isDirectory = resourceDto.inode_type === "directory";
+
+          if (isDirectory) {
+            const children =
+              await getResourcesByConnectionAndResourceFromStackAi(
+                connectionId,
+                resourceDto.resource_id,
+              );
+            return {
+              id: resourceDto.resource_id,
+              name: resourceDto.inode_path.path,
+              children,
+              type: "directory",
+            };
+          }
+          return {
+            id: resourceDto.resource_id,
+            name: resourceDto.inode_path.path,
+            type: "file",
+          };
+        }),
+      );
     });
 };

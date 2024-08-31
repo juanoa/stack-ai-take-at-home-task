@@ -30,7 +30,7 @@ export const ResourcesTree: React.FC<Props> = ({ connection }) => {
   return (
     <div>
       {resources.map((resource) => (
-        <ResourcesTreeRow key={resource.id} resource={resource} />
+        <ResourcesTreeRow key={resource.id} resource={resource} level={0} />
       ))}
     </div>
   );
