@@ -1,13 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { Resource } from "@/modules/resources/domain/Resource";
-import {
-  Folder,
-  File,
-  ChevronDown,
-  ChevronUp,
-  FolderClosed,
-} from "lucide-react";
+import { Folder, ChevronDown, FolderClosed, File } from "lucide-react";
 
 interface Props {
   resource: Resource;
