@@ -1,6 +1,7 @@
 import { Connection } from "@/modules/connections/domain/Connection";
 import { fetchStackAi } from "@/modules/commons/infrastructure/stack-ai/fetch-stack-ai";
 import { Resource } from "@/modules/resources/domain/Resource";
+import { assembleResourcesFromStackAi } from "@/modules/resources/infrastructure/stack-ai/assemble-resources-from-stack-ai";
 
 const PATH =
   "/connections/:connectionId/resources/children?resource_id=:resourceId";
@@ -22,34 +23,7 @@ export const getResourcesByConnectionAndResourceFromStackAi = async (
       return response.json();
     })
     .then(async (resources) => {
-      // TODO: Extract
       const resourcesDtos = resources as Array<any>;
-      if (!resourcesDtos.length) {
-        return [];
-      }
-      return await Promise.all(
-        resourcesDtos.map(async (resourceDto) => {
-          const isDirectory = resourceDto.inode_type === "directory";
-
-          if (isDirectory) {
-            const children =
-              await getResourcesByConnectionAndResourceFromStackAi(
-                connectionId,
-                resourceDto.resource_id,
-              );
-            return {
-              id: resourceDto.resource_id,
-              name: resourceDto.inode_path.path,
-              children,
-              type: "directory",
-            };
-          }
-          return {
-            id: resourceDto.resource_id,
-            name: resourceDto.inode_path.path,
-            type: "file",
-          };
-        }),
-      );
+      return assembleResourcesFromStackAi(resourcesDtos, connectionId);
     });
 };
