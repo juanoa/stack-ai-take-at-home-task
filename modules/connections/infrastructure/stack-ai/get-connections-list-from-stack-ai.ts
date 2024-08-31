@@ -3,7 +3,7 @@ import { fetchStackAi } from "@/modules/commons/infrastructure/stack-ai/fetch-st
 
 const PATH = "/connections?connection_provider=gdrive&limit=1";
 
-export const getConnectionsListFromStackAI = async (): Promise<
+export const getConnectionsListFromStackAi = async (): Promise<
   Array<Connection>
 > => {
   return fetchStackAi(PATH)

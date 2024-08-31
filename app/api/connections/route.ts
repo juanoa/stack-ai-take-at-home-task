@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
-import { getConnectionsListFromStackAI } from "@/modules/connections/infrastructure/stack-ai/get-connections-list-from-stack-a-i";
+import { getConnectionsListFromStackAi } from "@/modules/connections/infrastructure/stack-ai/get-connections-list-from-stack-ai";
 
 export async function GET() {
-  const connections = await getConnectionsListFromStackAI();
+  const connections = await getConnectionsListFromStackAi();
   return NextResponse.json(connections);
 }
