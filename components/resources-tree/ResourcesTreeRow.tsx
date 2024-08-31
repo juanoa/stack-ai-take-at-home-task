@@ -13,8 +13,8 @@ export const ResourcesTreeRow: React.FC<Props> = ({ resource, level }) => {
 
   return (
     <>
-      <div className={`rounded px-6 py-3 hover:bg-gray-50 ml-[${marginLeft}]`}>
-        <div className="flex items-center gap-4">
+      <div className="rounded px-6 py-3 hover:bg-gray-50">
+        <div className="flex items-center gap-4" style={{ marginLeft }}>
           {Resource.isDirectory(resource) ? (
             <Folder size={18} />
           ) : (
