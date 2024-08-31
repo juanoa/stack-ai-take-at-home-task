@@ -1,7 +1,13 @@
 "use client";
 import React, { useState } from "react";
 import { Resource } from "@/modules/resources/domain/Resource";
-import { Folder, File, ChevronDown, ChevronUp } from "lucide-react";
+import {
+  Folder,
+  File,
+  ChevronDown,
+  ChevronUp,
+  FolderClosed,
+} from "lucide-react";
 
 interface Props {
   resource: Resource;
@@ -23,7 +29,11 @@ export const ResourcesTreeRow: React.FC<Props> = ({ resource, level }) => {
         >
           {Resource.isDirectory(resource) ? (
             <>
-              <Folder size={18} className="group-hover/icons:hidden" />
+              {isSubTreeOpen ? (
+                <FolderClosed size={18} className="group-hover/icons:hidden" />
+              ) : (
+                <Folder size={18} className="group-hover/icons:hidden" />
+              )}
               {isSubTreeOpen ? (
                 <ChevronUp
                   size={18}
