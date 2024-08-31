@@ -34,18 +34,10 @@ export const ResourcesTreeRow: React.FC<Props> = ({ resource, level }) => {
               ) : (
                 <Folder size={18} className="group-hover/icons:hidden" />
               )}
-              {isSubTreeOpen ? (
-                <ChevronUp
-                  size={18}
-                  className="hidden cursor-pointer group-hover/icons:block"
-                />
-              ) : (
-                <ChevronDown
-                  size={18}
-                  className="hidden cursor-pointer group-hover/icons:block"
-                  onClick={() => setIsSubTreeOpen(true)}
-                />
-              )}
+              <ChevronDown
+                size={18}
+                className={`hidden transition-transform ${isSubTreeOpen && `-rotate-180`} transform cursor-pointer group-hover/icons:block`}
+              />
             </>
           ) : (
             <File size={18} />
