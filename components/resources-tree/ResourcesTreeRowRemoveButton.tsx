@@ -8,7 +8,7 @@ interface Props {
   resource: Resource;
 }
 
-export const ResourcesTreeRowDropdownMenu: React.FC<Props> = ({ resource }) => {
+export const ResourcesTreeRowRemoveButton: React.FC<Props> = ({ resource }) => {
   const queryClient = useQueryClient();
   const { connection, resourcesTree } = useResourcesTreeContext();
 
@@ -20,7 +20,7 @@ export const ResourcesTreeRowDropdownMenu: React.FC<Props> = ({ resource }) => {
 
   return (
     <Trash2
-      className="hidden cursor-pointer hover:text-red-500 group-hover/icons:block"
+      className="cursor-pointer opacity-0 transition-all hover:text-red-500 group-hover/icons:opacity-100"
       size={18}
       onClick={handleOnDeleteResource}
     />

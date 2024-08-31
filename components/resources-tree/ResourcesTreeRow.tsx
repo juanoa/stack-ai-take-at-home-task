@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { Resource } from "@/modules/resources/domain/Resource";
 import { ResourcesTreeRowIcon } from "@/components/resources-tree/ResourcesTreeRowIcon";
-import { ResourcesTreeRowDropdownMenu } from "@/components/resources-tree/ResourcesTreeRowDropdownMenu";
+import { ResourcesTreeRowRemoveButton } from "@/components/resources-tree/ResourcesTreeRowRemoveButton";
 
 interface Props {
   resource: Resource;
@@ -29,7 +29,7 @@ export const ResourcesTreeRow: React.FC<Props> = ({ resource, level }) => {
             />
             {resource.name}
           </div>
-          <ResourcesTreeRowDropdownMenu resource={resource} />
+          <ResourcesTreeRowRemoveButton resource={resource} />
         </div>
       </div>
       {Resource.isDirectory(resource) &&
