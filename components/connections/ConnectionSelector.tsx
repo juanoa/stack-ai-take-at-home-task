@@ -10,6 +10,8 @@ import {
 } from "@/components/ui/select";
 import { Connection } from "@/modules/connections/domain/Connection";
 import { Skeleton } from "@/components/ui/loading";
+import { GoogleDriveIcon } from "@/components/ui/icons/GoogleDriveIcon";
+import { ConnectionSelectorProviderIcon } from "@/components/connections/ConnectionSelectorProviderIcon";
 
 interface Props {
   options: Array<Connection>;
@@ -30,7 +32,7 @@ export const ConnectionSelector: React.FC<Props> = ({
 
   return (
     <Select value={value?.id}>
-      <SelectTrigger className="w-[180px]">
+      <SelectTrigger className="w-[220px]">
         <SelectValue placeholder="Select a connection" />
       </SelectTrigger>
       <SelectContent>
@@ -41,7 +43,10 @@ export const ConnectionSelector: React.FC<Props> = ({
               <SelectLabel>{provider}</SelectLabel>
               {connections.map((connection) => (
                 <SelectItem value={connection.id} key={connection.id}>
-                  {connection.name}
+                  <div className="flex items-center gap-3">
+                    <ConnectionSelectorProviderIcon connection={connection} />
+                    {connection.name}
+                  </div>
                 </SelectItem>
               ))}
             </SelectGroup>
