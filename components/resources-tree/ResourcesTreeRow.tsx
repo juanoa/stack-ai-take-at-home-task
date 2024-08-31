@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import { Resource } from "@/modules/resources/domain/Resource";
 import { Folder, ChevronDown, FolderClosed, File } from "lucide-react";
+import { ResourcesTreeRowIcon } from "@/components/resources-tree/ResourcesTreeRowIcon";
 
 interface Props {
   resource: Resource;
@@ -21,21 +22,10 @@ export const ResourcesTreeRow: React.FC<Props> = ({ resource, level }) => {
           className="flex items-center gap-4"
           style={{ marginLeft: `${level * 20}px` }}
         >
-          {Resource.isDirectory(resource) ? (
-            <>
-              {isSubTreeOpen ? (
-                <FolderClosed size={18} className="group-hover/icons:hidden" />
-              ) : (
-                <Folder size={18} className="group-hover/icons:hidden" />
-              )}
-              <ChevronDown
-                size={18}
-                className={`hidden transition-transform ${isSubTreeOpen && `-rotate-180`} transform cursor-pointer group-hover/icons:block`}
-              />
-            </>
-          ) : (
-            <File size={18} />
-          )}
+          <ResourcesTreeRowIcon
+            resource={resource}
+            isSubTreeOpen={isSubTreeOpen}
+          />
           {resource.name}
         </div>
       </div>
