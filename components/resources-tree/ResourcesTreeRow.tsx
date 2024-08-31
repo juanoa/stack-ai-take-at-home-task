@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { Resource } from "@/modules/resources/domain/Resource";
 import { ResourcesTreeRowIcon } from "@/components/resources-tree/ResourcesTreeRowIcon";
 import { ResourcesTreeRowRemoveButton } from "@/components/resources-tree/ResourcesTreeRowRemoveButton";
+import { Checkbox } from "@/components/ui/checkbox";
 
 interface Props {
   resource: Resource;
@@ -23,6 +24,7 @@ export const ResourcesTreeRow: React.FC<Props> = ({ resource, level }) => {
           style={{ marginLeft: `${level * 20}px` }}
         >
           <div className="flex items-center gap-4">
+            <Checkbox className="opacity-0 transition-opacity group-hover/icons:opacity-100" />
             <ResourcesTreeRowIcon
               resource={resource}
               isSubTreeOpen={isSubTreeOpen}
