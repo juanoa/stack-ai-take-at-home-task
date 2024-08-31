@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getResourcesByConnectionFromApi } from "@/modules/resources/infrastructure/api/get-resources-by-connection-from-api";
 import { ResourcesTreeRow } from "@/components/resources-tree/ResourcesTreeRow";
 import { Skeleton } from "@/components/ui/loading";
+import { ResourcesTreeContextProvider } from "@/components/resources-tree/ResourcesTreeContext";
 
 interface Props {
   connection?: Connection;
@@ -11,10 +12,14 @@ interface Props {
 
 export const ResourcesTree: React.FC<Props> = ({ connection }) => {
   const { data: resources = [], isLoading } = useQuery({
-    queryKey: ["connection", "resources", connection?.id],
+    queryKey: ["connection", connection?.id, "resources"],
     queryFn: () => getResourcesByConnectionFromApi(connection?.id ?? ""),
     enabled: !!connection,
   });
+
+  if (!connection) {
+    return null;
+  }
 
   if (isLoading) {
     // TODO: Simplify this skeleton with Array.from({ length: 3 }).map
@@ -29,9 +34,14 @@ export const ResourcesTree: React.FC<Props> = ({ connection }) => {
 
   return (
     <div>
-      {resources.map((resource) => (
-        <ResourcesTreeRow key={resource.id} resource={resource} level={0} />
-      ))}
+      <ResourcesTreeContextProvider
+        connection={connection}
+        resources={resources}
+      >
+        {resources.map((resource) => (
+          <ResourcesTreeRow key={resource.id} resource={resource} level={0} />
+        ))}
+      </ResourcesTreeContextProvider>
     </div>
   );
 };
