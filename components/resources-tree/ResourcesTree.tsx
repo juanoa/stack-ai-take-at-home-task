@@ -17,6 +17,7 @@ export const ResourcesTree: React.FC<Props> = ({ connection }) => {
   });
 
   if (isLoading) {
+    // TODO: Simplify this skeleton with Array.from({ length: 3 }).map
     return (
       <div className="flex flex-col gap-8">
         <Skeleton className="h-[24px] w-[580px]" />
