@@ -18,4 +18,6 @@ export const KnowledgeBase = {
 
     return KnowledgeBase.create(id, pendingResources);
   },
+  thereArePendingResources: (knowledgeBase: KnowledgeBase): boolean =>
+    knowledgeBase.resources.some(KnowledgeBaseResource.isPending),
 };

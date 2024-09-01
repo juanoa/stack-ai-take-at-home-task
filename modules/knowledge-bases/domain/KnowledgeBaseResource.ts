@@ -10,4 +10,6 @@ export const KnowledgeBaseResource = {
     id,
     status: KnowledgeBaseResourceStatuses.PENDING,
   }),
+  isPending: (resource: KnowledgeBaseResource): boolean =>
+    resource.status === KnowledgeBaseResourceStatuses.PENDING,
 };

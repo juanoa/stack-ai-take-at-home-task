@@ -1,10 +1,13 @@
-import React, { PropsWithChildren, useCallback, useState } from "react";
+import React, { PropsWithChildren, useCallback, useEffect, useState } from "react";
 import { KnowledgeBase } from "@/modules/knowledge-bases/domain/KnowledgeBase";
 import { Resource } from "@/modules/resources/domain/Resource";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createAndSyncKnowledgeBaseFromApi } from "@/modules/knowledge-bases/infrastructure/api/crate-and-sync-knowledge-base-from-api";
 import { useResourcesTreeContext } from "@/components/resources-tree/contexts/ResourcesTreeContext";
 import { getKnowledgeBaseFromApi } from "@/modules/knowledge-bases/infrastructure/api/get-knowledge-base-from-api";
+import { KnowledgeBaseResourceStatuses } from "@/modules/knowledge-bases/domain/KnowledgeBaseResourceStatuses";
+import { KnowledgeBaseStatusModal } from "@/components/knowledge-bases/KnowledgeBaseStatusModal";
+import { KnowledgeBaseResource } from "@/modules/knowledge-bases/domain/KnowledgeBaseResource";
 
 interface KnowledgeBaseContextValue {
   knowledgeBase?: KnowledgeBase;
@@ -30,7 +33,7 @@ export const KnowledgeBaseContextProvider: React.FC<PropsWithChildren> = ({ chil
   const queryClient = useQueryClient();
   const { connection } = useResourcesTreeContext();
 
-  const { data: knowledgeBase } = useQuery({
+  const { data: knowledgeBase, refetch } = useQuery({
     queryKey: ["knowledgeBase", currentKnowledgeBaseId],
     queryFn: () => getKnowledgeBaseFromApi(currentKnowledgeBaseId as string),
     enabled: !!currentKnowledgeBaseId,
@@ -49,6 +52,17 @@ export const KnowledgeBaseContextProvider: React.FC<PropsWithChildren> = ({ chil
     },
   });
 
+  /// Refetch every 5 seconds while there are resoruces penging
+  useEffect(() => {
+    if (knowledgeBase && KnowledgeBase.thereArePendingResources(knowledgeBase)) {
+      const interval = setInterval(() => {
+        refetch();
+      }, 3000);
+
+      return () => clearInterval(interval);
+    }
+  }, [knowledgeBase, refetch]);
+
   const indexResources = useCallback(
     async (resources: Array<Resource>) => {
       await triggerCreateAndSyncKnowledgeBase(resources);
@@ -61,6 +75,7 @@ export const KnowledgeBaseContextProvider: React.FC<PropsWithChildren> = ({ chil
       value={{ indexResources, isPendingCreateKnowledgeBase, knowledgeBase }}
     >
       {children}
+      <KnowledgeBaseStatusModal knowledgeBase={knowledgeBase} />
     </KnowledgeBaseContext.Provider>
   );
 };
