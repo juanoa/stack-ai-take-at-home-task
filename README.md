@@ -13,6 +13,7 @@ cleaner.
 I detect these main entities: _connections, knowledge bases and resources_. Inside each folder, we can find:
     - `domain`: contains types and domain logic
     - `infrastructure`: contains the API clients (App -> Next API, Next API -> Backend)
+- Conventional commits are used to have a better understanding of the changes in the project.
 
 ## 🔝 Future improvements
 
