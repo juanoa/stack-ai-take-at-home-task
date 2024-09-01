@@ -33,7 +33,11 @@ export const KnowledgeBaseContextProvider: React.FC<PropsWithChildren> = ({ chil
   const queryClient = useQueryClient();
   const { connection } = useResourcesTreeContext();
 
-  const { data: knowledgeBase, refetch } = useQuery({
+  const {
+    data: knowledgeBase,
+    refetch,
+    isFetching,
+  } = useQuery({
     queryKey: ["knowledgeBase", currentKnowledgeBaseId],
     queryFn: () => getKnowledgeBaseFromApi(currentKnowledgeBaseId as string),
     enabled: !!currentKnowledgeBaseId,
@@ -52,16 +56,16 @@ export const KnowledgeBaseContextProvider: React.FC<PropsWithChildren> = ({ chil
     },
   });
 
-  /// Refetch every 5 seconds while there are resoruces penging
+  /// Refetch if there are pending resources
   useEffect(() => {
-    if (knowledgeBase && KnowledgeBase.thereArePendingResources(knowledgeBase)) {
+    if (!isFetching && knowledgeBase && KnowledgeBase.thereArePendingResources(knowledgeBase)) {
       const interval = setInterval(() => {
         refetch();
-      }, 3000);
+      }, 500);
 
       return () => clearInterval(interval);
     }
-  }, [knowledgeBase, refetch]);
+  }, [knowledgeBase, refetch, isFetching]);
 
   const indexResources = useCallback(
     async (resources: Array<Resource>) => {
