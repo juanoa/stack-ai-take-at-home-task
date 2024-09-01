@@ -16,7 +16,7 @@ export const IndexButton: React.FC<Props> = ({ ...rest }) => {
       {...rest}
     >
       <Rocket className="mr-2 h-4 w-4" /> Index {selectedFiles.length}{" "}
-      {selectedFiles.length > 1 ? "files" : "file"}
+      {selectedFiles.length === 1 ? "file" : "files"}
     </Button>
   );
 };
