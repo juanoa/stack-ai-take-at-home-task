@@ -4,21 +4,19 @@ import { Trash2 } from "lucide-react";
 import { useResourcesTreeContext } from "@/components/resources-tree/contexts/ResourcesTreeContext";
 import { useQueryClient } from "@tanstack/react-query";
 import { useResourcesTreeSelectableContext } from "@/components/resources-tree/contexts/ResourceTreeSelectableContext";
+import { useDeleteResourceFromList } from "@/hooks/useDeleteResourceFromList";
 
 interface Props {
   resource: Resource;
 }
 
 export const ResourcesTreeRowRemoveButton: React.FC<Props> = ({ resource }) => {
-  const queryClient = useQueryClient();
-  const { connection, resourcesTree } = useResourcesTreeContext();
   const { onUnselectResource } = useResourcesTreeSelectableContext();
 
+  const deleteResourceFromList = useDeleteResourceFromList();
+
   const handleOnDeleteResource = () => {
-    queryClient.setQueryData(
-      ["connection", connection.id, "resources"],
-      Resource.deleteResourceById(resourcesTree, resource.id),
-    );
+    deleteResourceFromList(resource.id);
     onUnselectResource(resource);
   };
 

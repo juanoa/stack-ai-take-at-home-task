@@ -11,6 +11,7 @@ import { IndexButton } from "@/components/index-button/IndexButton";
 import { KnowledgeBaseContextProvider } from "@/components/knowledge-bases/KnowledgeBaseContext";
 import { ResourcesTreeSearcher } from "@/components/resources-tree/ResourcesTreeSearcher";
 import { Resource } from "@/modules/resources/domain/Resource";
+import { useGetResourcesByConnection } from "@/hooks/useGetResourcesByConnection";
 
 interface Props {
   connection?: Connection;
@@ -19,11 +20,7 @@ interface Props {
 export const ResourcesTree: React.FC<Props> = ({ connection }) => {
   const [search, setSearch] = useState<string>("");
 
-  const { data: resources = [], isLoading } = useQuery({
-    queryKey: ["connection", connection?.id, "resources"],
-    queryFn: () => getResourcesByConnectionFromApi(connection?.id ?? ""),
-    enabled: !!connection,
-  });
+  const { data: resources = [], isLoading } = useGetResourcesByConnection(connection);
 
   const filteredResources = useMemo(
     () => Resource.searchByName(resources, search),

@@ -1,5 +1,3 @@
-import { Connection } from "@/modules/connections/domain/Connection";
-import { Resource } from "@/modules/resources/domain/Resource";
 import { KnowledgeBase } from "@/modules/knowledge-bases/domain/KnowledgeBase";
 
 const PATH = "/api/knowledge-bases/:knowledgeBaseId";

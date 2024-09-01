@@ -10,6 +10,8 @@ import { KnowledgeBaseResourceStatuses } from "@/modules/knowledge-bases/domain/
 import { useToast } from "@/components/ui/toast/use-toast";
 import { removeKnowledgeBaseResourceFromApi } from "@/modules/knowledge-bases/infrastructure/api/remove-knowledge-base-resource-from-api";
 import { useRemoveKnowledgeBaseResource } from "@/hooks/useRemoveKnowledgeBaseResource";
+import { useCreateAndSyncKnowledgeBase } from "@/hooks/useCreateAndSyncKnowledgeBase";
+import { useGetKnowledgeBase } from "@/hooks/useGetKnowledgeBase";
 
 interface KnowledgeBaseContextValue {
   knowledgeBase?: KnowledgeBase;
@@ -35,43 +37,32 @@ export const KnowledgeBaseContextProvider: React.FC<PropsWithChildren> = ({ chil
   const [currentKnowledgeBaseId, setCurrentKnowledgeBaseId] = useState<KnowledgeBase["id"]>();
   const [isModalVisible, setIsModalVisible] = useState(false);
 
-  const queryClient = useQueryClient();
-  const { connection } = useResourcesTreeContext();
-
   const {
     data: knowledgeBase,
-    refetch,
-    isFetching,
-  } = useQuery({
-    queryKey: ["knowledgeBase", currentKnowledgeBaseId],
-    queryFn: () => getKnowledgeBaseFromApi(currentKnowledgeBaseId as string),
-    enabled: !!currentKnowledgeBaseId,
-  });
+    refetch: refetchKnowledgeBase,
+    isFetching: isFetchingKnowledgeBase,
+  } = useGetKnowledgeBase(currentKnowledgeBaseId);
 
   const {
     mutateAsync: triggerCreateAndSyncKnowledgeBase,
     isPending: isPendingCreateKnowledgeBase,
-  } = useMutation({
-    mutationFn: (resources: Array<Resource>) =>
-      createAndSyncKnowledgeBaseFromApi(connection, resources),
-    onSuccess: (knowledgeBaseId, resources) => {
-      setCurrentKnowledgeBaseId(knowledgeBaseId);
-      const emptyKnowledgeBase = KnowledgeBase.createPending(knowledgeBaseId, resources);
-      queryClient.setQueryData(["knowledgeBase", knowledgeBaseId], emptyKnowledgeBase);
-    },
-  });
+  } = useCreateAndSyncKnowledgeBase({ onSuccess: setCurrentKnowledgeBaseId });
 
-  /// Refetch if there are pending resources
+  // Refetch if there are pending resources
   useEffect(() => {
-    if (!isFetching && knowledgeBase && KnowledgeBase.thereArePendingResources(knowledgeBase)) {
+    if (
+      !isFetchingKnowledgeBase &&
+      knowledgeBase &&
+      KnowledgeBase.thereArePendingResources(knowledgeBase)
+    ) {
       setIsModalVisible(true);
       const interval = setInterval(() => {
-        refetch();
+        refetchKnowledgeBase();
       }, 500);
 
       return () => clearInterval(interval);
     }
-  }, [knowledgeBase, refetch, isFetching]);
+  }, [knowledgeBase, refetchKnowledgeBase, isFetchingKnowledgeBase]);
 
   const { mutate: triggerRemoveElements } = useRemoveKnowledgeBaseResource(knowledgeBase);
 

@@ -2,18 +2,14 @@
 
 import { ConnectionSelector } from "@/components/connections/ConnectionSelector";
 import { useEffect, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { getConnectionsListFromApi } from "@/modules/connections/infrastructure/api/get-connections-list-from-api";
 import { Connection } from "@/modules/connections/domain/Connection";
 import { ResourcesTree } from "@/components/resources-tree/ResourcesTree";
+import { useGetConnections } from "@/hooks/useGetConnections";
 
 export default function Home() {
   const [selectedConnection, setSelectedConnection] = useState<Connection>();
 
-  const { data: connections = [], isLoading } = useQuery({
-    queryKey: ["connections"],
-    queryFn: getConnectionsListFromApi,
-  });
+  const { data: connections = [], isLoading } = useGetConnections();
 
   useEffect(() => {
     if (connections.length) {
