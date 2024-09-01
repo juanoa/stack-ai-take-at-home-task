@@ -26,4 +26,13 @@ export const KnowledgeBase = {
     resourceId: Resource["id"],
   ): KnowledgeBaseResourceStatuses | undefined =>
     knowledgeBase.resources.find((resource) => resource.id === resourceId)?.status,
+  getResourcePathByResourceId: (
+    knowledgeBase: KnowledgeBase,
+    resourceId: Resource["id"],
+  ): string | undefined =>
+    knowledgeBase.resources.find((resource) => resource.id === resourceId)?.path,
+  deleteResourceById: (knowledgeBase: KnowledgeBase, resourceId: Resource["id"]): KnowledgeBase => {
+    const resources = knowledgeBase.resources.filter((resource) => resource.id !== resourceId);
+    return KnowledgeBase.create(knowledgeBase.id, resources);
+  },
 };

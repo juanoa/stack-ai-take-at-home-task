@@ -2,6 +2,7 @@ import { KnowledgeBaseResourceStatuses } from "@/modules/knowledge-bases/domain/
 
 export type KnowledgeBaseResource = {
   id: string;
+  path?: string;
   status: KnowledgeBaseResourceStatuses;
 };
 

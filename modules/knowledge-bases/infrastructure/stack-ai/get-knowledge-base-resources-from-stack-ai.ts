@@ -27,6 +27,7 @@ export const getKnowledgeBaseResourcesFromStackAi = async (
             return {
               id: resourceDto.resource_id as string,
               status: mapStatus(resourceDto.status),
+              path: resourceDto.inode_path.path,
             } as KnowledgeBaseResource;
           }
           return await getKnowledgeBaseResourcesFromStackAi(

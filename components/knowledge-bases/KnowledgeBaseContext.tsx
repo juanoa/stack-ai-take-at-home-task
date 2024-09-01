@@ -8,12 +8,15 @@ import { getKnowledgeBaseFromApi } from "@/modules/knowledge-bases/infrastructur
 import { KnowledgeBaseStatusModal } from "@/components/knowledge-bases/KnowledgeBaseStatusModal";
 import { KnowledgeBaseResourceStatuses } from "@/modules/knowledge-bases/domain/KnowledgeBaseResourceStatuses";
 import { useToast } from "@/components/ui/toast/use-toast";
+import { removeKnowledgeBaseResourceFromApi } from "@/modules/knowledge-bases/infrastructure/api/remove-knowledge-base-resource-from-api";
+import { useRemoveKnowledgeBaseResource } from "@/hooks/useRemoveKnowledgeBaseResource";
 
 interface KnowledgeBaseContextValue {
   knowledgeBase?: KnowledgeBase;
   indexResources: (resources: Array<Resource>) => Promise<void>;
   isPendingCreateKnowledgeBase: boolean;
   getIndexingStatus: (resourceId: Resource["id"]) => KnowledgeBaseResourceStatuses | undefined;
+  removeResource: (resourceId: Resource["id"]) => Promise<void>;
 }
 
 export const KnowledgeBaseContext = React.createContext<KnowledgeBaseContextValue | undefined>(
@@ -34,7 +37,6 @@ export const KnowledgeBaseContextProvider: React.FC<PropsWithChildren> = ({ chil
 
   const queryClient = useQueryClient();
   const { connection } = useResourcesTreeContext();
-  const { toast } = useToast();
 
   const {
     data: knowledgeBase,
@@ -69,14 +71,16 @@ export const KnowledgeBaseContextProvider: React.FC<PropsWithChildren> = ({ chil
 
       return () => clearInterval(interval);
     }
-    if (knowledgeBase && !KnowledgeBase.thereArePendingResources(knowledgeBase)) {
-      setIsModalVisible(false);
-      toast({
-        title: "Knowledge base created",
-        description: "All files have been indexed successfully",
-      });
-    }
-  }, [knowledgeBase, refetch, isFetching, toast]);
+  }, [knowledgeBase, refetch, isFetching]);
+
+  const { mutate: triggerRemoveElements } = useRemoveKnowledgeBaseResource(knowledgeBase);
+
+  const removeResource = useCallback(
+    async (resourceId: Resource["id"]) => {
+      triggerRemoveElements(resourceId);
+    },
+    [triggerRemoveElements],
+  );
 
   const indexResources = useCallback(
     async (resources: Array<Resource>) => {
@@ -95,7 +99,13 @@ export const KnowledgeBaseContextProvider: React.FC<PropsWithChildren> = ({ chil
 
   return (
     <KnowledgeBaseContext.Provider
-      value={{ indexResources, isPendingCreateKnowledgeBase, knowledgeBase, getIndexingStatus }}
+      value={{
+        indexResources,
+        isPendingCreateKnowledgeBase,
+        knowledgeBase,
+        getIndexingStatus,
+        removeResource,
+      }}
     >
       {children}
       <KnowledgeBaseStatusModal
