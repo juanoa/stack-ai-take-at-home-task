@@ -8,6 +8,7 @@ import { useResourcesTreeSelectableContext } from "@/components/resources-tree/c
 import { Separator } from "@/components/ui/separator";
 import { ResourcesTreeDirectoryCounter } from "@/components/resources-tree/ResourcesTreeRowDirectoryCounter";
 import { ResourcesTreeRowIndexingStatusBadge } from "@/components/resources-tree/ResourcesTreeRowIndexingStatusBadge";
+import { ResourcesTreeRowName } from "@/components/resources-tree/contexts/ResourcesTreeRowName";
 
 interface Props {
   resource: Resource;
@@ -48,7 +49,7 @@ export const ResourcesTreeRow: React.FC<Props> = ({ resource, level, search }) =
               checked={isSelected}
             />
             <ResourcesTreeRowIcon resource={resource} isSubTreeOpen={isSubTreeOpen} />
-            {resource.name}
+            <ResourcesTreeRowName resource={resource} search={search} />
             {Resource.isDirectory(resource) && (
               <ResourcesTreeDirectoryCounter resource={resource} />
             )}

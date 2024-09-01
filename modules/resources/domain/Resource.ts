@@ -67,7 +67,7 @@ export const Resource = {
   },
   searchByName: (resources: Array<Resource>, name: string): Array<Resource> => {
     const unPrunedDirectories = resources.reduce<Array<Resource>>((acc, resource) => {
-      if (resource.name.includes(name)) {
+      if (resource.name.toLowerCase().includes(name.toLowerCase())) {
         return [...acc, resource];
       }
 
