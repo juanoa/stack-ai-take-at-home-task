@@ -7,16 +7,14 @@ import { X } from "lucide-react";
 
 interface Props {
   knowledgeBase?: KnowledgeBase;
+  isVisible: boolean;
+  onClose: () => void;
 }
-export const KnowledgeBaseStatusModal: React.FC<Props> = ({ knowledgeBase }) => {
-  const [isVisible, setIsVisible] = useState(false);
-
-  useEffect(() => {
-    if (knowledgeBase) {
-      setIsVisible(true);
-    }
-  }, [knowledgeBase]);
-
+export const KnowledgeBaseStatusModal: React.FC<Props> = ({
+  knowledgeBase,
+  isVisible,
+  onClose,
+}) => {
   if (!isVisible || !knowledgeBase) {
     return null;
   }
@@ -30,10 +28,7 @@ export const KnowledgeBaseStatusModal: React.FC<Props> = ({ knowledgeBase }) => 
           <CardTitle>Indexing files</CardTitle>
           <CardDescription>Indexing status in knowledge base</CardDescription>
         </div>
-        <X
-          onClick={() => setIsVisible(false)}
-          className="cursor-pointer text-gray-600 hover:text-gray-900"
-        />
+        <X onClick={onClose} className="cursor-pointer text-gray-600 hover:text-gray-900" />
       </CardHeader>
       <CardContent>
         {resourcesSortedById.map((resource) => (

@@ -7,6 +7,7 @@ import { useResourcesTreeContext } from "@/components/resources-tree/contexts/Re
 import { getKnowledgeBaseFromApi } from "@/modules/knowledge-bases/infrastructure/api/get-knowledge-base-from-api";
 import { KnowledgeBaseStatusModal } from "@/components/knowledge-bases/KnowledgeBaseStatusModal";
 import { KnowledgeBaseResourceStatuses } from "@/modules/knowledge-bases/domain/KnowledgeBaseResourceStatuses";
+import { useToast } from "@/components/ui/toast/use-toast";
 
 interface KnowledgeBaseContextValue {
   knowledgeBase?: KnowledgeBase;
@@ -29,9 +30,11 @@ export const useKnowledgeBaseContext = () => {
 
 export const KnowledgeBaseContextProvider: React.FC<PropsWithChildren> = ({ children }) => {
   const [currentKnowledgeBaseId, setCurrentKnowledgeBaseId] = useState<KnowledgeBase["id"]>();
+  const [isModalVisible, setIsModalVisible] = useState(false);
 
   const queryClient = useQueryClient();
   const { connection } = useResourcesTreeContext();
+  const { toast } = useToast();
 
   const {
     data: knowledgeBase,
@@ -59,13 +62,21 @@ export const KnowledgeBaseContextProvider: React.FC<PropsWithChildren> = ({ chil
   /// Refetch if there are pending resources
   useEffect(() => {
     if (!isFetching && knowledgeBase && KnowledgeBase.thereArePendingResources(knowledgeBase)) {
+      setIsModalVisible(true);
       const interval = setInterval(() => {
         refetch();
       }, 500);
 
       return () => clearInterval(interval);
     }
-  }, [knowledgeBase, refetch, isFetching]);
+    if (knowledgeBase && !KnowledgeBase.thereArePendingResources(knowledgeBase)) {
+      setIsModalVisible(false);
+      toast({
+        title: "Knowledge base created",
+        description: "All files have been indexed successfully",
+      });
+    }
+  }, [knowledgeBase, refetch, isFetching, toast]);
 
   const indexResources = useCallback(
     async (resources: Array<Resource>) => {
@@ -87,7 +98,11 @@ export const KnowledgeBaseContextProvider: React.FC<PropsWithChildren> = ({ chil
       value={{ indexResources, isPendingCreateKnowledgeBase, knowledgeBase, getIndexingStatus }}
     >
       {children}
-      <KnowledgeBaseStatusModal knowledgeBase={knowledgeBase} />
+      <KnowledgeBaseStatusModal
+        knowledgeBase={knowledgeBase}
+        isVisible={isModalVisible}
+        onClose={() => setIsModalVisible(false)}
+      />
     </KnowledgeBaseContext.Provider>
   );
 };

@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 import { Resource } from "@/modules/resources/domain/Resource";
-import { Trash2 } from "lucide-react";
+import { Trash2, X } from "lucide-react";
 import { useResourcesTreeContext } from "@/components/resources-tree/contexts/ResourcesTreeContext";
 import { useQueryClient } from "@tanstack/react-query";
 import { useResourcesTreeSelectableContext } from "@/components/resources-tree/contexts/ResourceTreeSelectableContext";
@@ -27,5 +27,9 @@ export const ResourcesTreeRowIndexingStatus: React.FC<Props> = ({ resource }) =>
     return <Badge variant="outline">Indexing</Badge>;
   }
 
-  return <Badge>Indexed</Badge>;
+  return (
+    <Badge className="flex flex-row gap-1.5">
+      Indexed <X size={12} className="cursor-pointer" />
+    </Badge>
+  );
 };
