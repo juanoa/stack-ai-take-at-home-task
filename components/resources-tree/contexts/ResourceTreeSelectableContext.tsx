@@ -1,10 +1,10 @@
 import { Resource, ResourceFile } from "@/modules/resources/domain/Resource";
 import React, { PropsWithChildren, useCallback, useState } from "react";
-import { useResourcesTreeContext } from "@/components/resources-tree/contexts/ResourcesTreeContext";
 
 interface ResourcesTreeSelectableContextValue {
   selectedFiles: Array<ResourceFile>;
   onToggleResource: (resource: Resource) => void;
+  onUnselectResource: (resource: Resource) => void;
   isResourceSelected: (resource: Resource) => boolean | "indeterminate";
 }
 
@@ -70,9 +70,23 @@ export const ResourcesTreeSelectableContextProvider: React.FC<PropsWithChildren>
     [selectedFiles],
   );
 
+  const onUnselectResource = useCallback(
+    (resource: Resource) => {
+      if (Resource.isFile(resource)) {
+        setSelectedFiles(selectedFiles.filter((file) => file.id !== resource.id));
+      }
+      if (Resource.isDirectory(resource)) {
+        setSelectedFiles(
+          selectedFiles.filter((file) => !Resource.getAllSubFiles(resource).includes(file)),
+        );
+      }
+    },
+    [selectedFiles],
+  );
+
   return (
     <ResourcesTreeSelectableContext.Provider
-      value={{ selectedFiles, onToggleResource, isResourceSelected }}
+      value={{ selectedFiles, onToggleResource, isResourceSelected, onUnselectResource }}
     >
       {children}
     </ResourcesTreeSelectableContext.Provider>
