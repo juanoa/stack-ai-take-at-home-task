@@ -6,6 +6,7 @@ import { ResourcesTreeRow } from "@/components/resources-tree/ResourcesTreeRow";
 import { Skeleton } from "@/components/ui/loading";
 import { ResourcesTreeContextProvider } from "@/components/resources-tree/contexts/ResourcesTreeContext";
 import { ResourcesTreeSelectableContextProvider } from "@/components/resources-tree/contexts/ResourceTreeSelectableContext";
+import { Separator } from "@/components/ui/separator";
 
 interface Props {
   connection?: Connection;
@@ -35,11 +36,9 @@ export const ResourcesTree: React.FC<Props> = ({ connection }) => {
 
   return (
     <div>
-      <ResourcesTreeContextProvider
-        connection={connection}
-        resources={resources}
-      >
+      <ResourcesTreeContextProvider connection={connection} resources={resources}>
         <ResourcesTreeSelectableContextProvider>
+          <Separator />
           {resources.map((resource) => (
             <ResourcesTreeRow key={resource.id} resource={resource} level={0} />
           ))}
