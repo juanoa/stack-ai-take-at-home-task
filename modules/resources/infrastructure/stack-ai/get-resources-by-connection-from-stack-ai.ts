@@ -1,7 +1,6 @@
 import { Connection } from "@/modules/connections/domain/Connection";
 import { fetchStackAi } from "@/modules/commons/infrastructure/stack-ai/fetch-stack-ai";
 import { Resource } from "@/modules/resources/domain/Resource";
-import { getResourcesByConnectionAndResourceFromStackAi } from "@/modules/resources/infrastructure/stack-ai/get-resources-by-connection-and-resource-from-stack-ai";
 import { assembleResourcesFromStackAi } from "@/modules/resources/infrastructure/stack-ai/assemble-resources-from-stack-ai";
 
 const PATH = "/connections/:connectionId/resources/children";
