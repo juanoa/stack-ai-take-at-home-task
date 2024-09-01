@@ -4,3 +4,10 @@ export type KnowledgeBaseResource = {
   id: string;
   status: KnowledgeBaseResourceStatuses;
 };
+
+export const KnowledgeBaseResource = {
+  createPending: (id: string): KnowledgeBaseResource => ({
+    id,
+    status: KnowledgeBaseResourceStatuses.PENDING,
+  }),
+};

@@ -1,9 +1,10 @@
 import React, { PropsWithChildren, useCallback, useState } from "react";
 import { KnowledgeBase } from "@/modules/knowledge-bases/domain/KnowledgeBase";
 import { Resource } from "@/modules/resources/domain/Resource";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createAndSyncKnowledgeBaseFromApi } from "@/modules/knowledge-bases/infrastructure/api/crate-and-sync-knowledge-base-from-api";
 import { useResourcesTreeContext } from "@/components/resources-tree/contexts/ResourcesTreeContext";
+import { getKnowledgeBaseFromApi } from "@/modules/knowledge-bases/infrastructure/api/get-knowledge-base-from-api";
 
 interface KnowledgeBaseContextValue {
   knowledgeBase?: KnowledgeBase;
@@ -26,24 +27,39 @@ export const useKnowledgeBaseContext = () => {
 export const KnowledgeBaseContextProvider: React.FC<PropsWithChildren> = ({ children }) => {
   const [currentKnowledgeBaseId, setCurrentKnowledgeBaseId] = useState<KnowledgeBase["id"]>();
 
+  const queryClient = useQueryClient();
   const { connection } = useResourcesTreeContext();
 
-  const { mutateAsync: triggerCreateAndSyncKnowledgeBae, isPending: isPendingCreateKnowledgeBase } =
-    useMutation({
-      mutationFn: (resources: Array<Resource>) =>
-        createAndSyncKnowledgeBaseFromApi(connection, resources),
-    });
+  const { data: knowledgeBase } = useQuery({
+    queryKey: ["knowledgeBase", currentKnowledgeBaseId],
+    queryFn: () => getKnowledgeBaseFromApi(currentKnowledgeBaseId as string),
+    enabled: !!currentKnowledgeBaseId,
+  });
+
+  const {
+    mutateAsync: triggerCreateAndSyncKnowledgeBase,
+    isPending: isPendingCreateKnowledgeBase,
+  } = useMutation({
+    mutationFn: (resources: Array<Resource>) =>
+      createAndSyncKnowledgeBaseFromApi(connection, resources),
+    onSuccess: (knowledgeBaseId, resources) => {
+      setCurrentKnowledgeBaseId(knowledgeBaseId);
+      const emptyKnowledgeBase = KnowledgeBase.createPending(knowledgeBaseId, resources);
+      queryClient.setQueryData(["knowledgeBase", knowledgeBaseId], emptyKnowledgeBase);
+    },
+  });
 
   const indexResources = useCallback(
     async (resources: Array<Resource>) => {
-      const knowledgeBaseId = await triggerCreateAndSyncKnowledgeBae(resources);
-      setCurrentKnowledgeBaseId(knowledgeBaseId);
+      await triggerCreateAndSyncKnowledgeBase(resources);
     },
-    [triggerCreateAndSyncKnowledgeBae],
+    [triggerCreateAndSyncKnowledgeBase],
   );
 
   return (
-    <KnowledgeBaseContext.Provider value={{ indexResources, isPendingCreateKnowledgeBase }}>
+    <KnowledgeBaseContext.Provider
+      value={{ indexResources, isPendingCreateKnowledgeBase, knowledgeBase }}
+    >
       {children}
     </KnowledgeBaseContext.Provider>
   );
