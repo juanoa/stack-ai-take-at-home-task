@@ -34,7 +34,7 @@ export const ResourcesTreeRow: React.FC<Props> = ({ resource, level }) => {
       >
         <div
           className="flex items-center justify-between"
-          style={{ marginLeft: `${level * 20}px` }}
+          style={{ marginLeft: `${level * 30}px` }}
         >
           <div className="flex items-center gap-4">
             <Checkbox
