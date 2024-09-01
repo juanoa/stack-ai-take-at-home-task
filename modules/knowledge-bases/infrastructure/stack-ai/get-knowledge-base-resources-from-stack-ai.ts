@@ -44,6 +44,8 @@ const mapStatus = (status: string): KnowledgeBaseResourceStatuses => {
   switch (status) {
     case "indexed":
       return KnowledgeBaseResourceStatuses.INDEXED;
+    case "error":
+      return KnowledgeBaseResourceStatuses.ERROR;
     default:
       return KnowledgeBaseResourceStatuses.PENDING;
   }

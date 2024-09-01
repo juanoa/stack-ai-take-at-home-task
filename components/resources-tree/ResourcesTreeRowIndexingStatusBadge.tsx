@@ -1,12 +1,9 @@
 import React, { useMemo } from "react";
 import { Resource } from "@/modules/resources/domain/Resource";
-import { Trash2, X } from "lucide-react";
-import { useResourcesTreeContext } from "@/components/resources-tree/contexts/ResourcesTreeContext";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useResourcesTreeSelectableContext } from "@/components/resources-tree/contexts/ResourceTreeSelectableContext";
+import { X } from "lucide-react";
 import { useKnowledgeBaseContext } from "@/components/knowledge-bases/KnowledgeBaseContext";
 import { Badge } from "@/components/ui/badge";
-import { removeKnowledgeBaseResourceFromApi } from "@/modules/knowledge-bases/infrastructure/api/remove-knowledge-base-resource-from-api";
+import { KnowledgeBaseResourceStatuses } from "@/modules/knowledge-bases/domain/KnowledgeBaseResourceStatuses";
 
 interface Props {
   resource: Resource;
@@ -24,8 +21,12 @@ export const ResourcesTreeRowIndexingStatusBadge: React.FC<Props> = ({ resource 
     return null;
   }
 
-  if (indexingStatus === "pending") {
+  if (indexingStatus === KnowledgeBaseResourceStatuses.PENDING) {
     return <Badge variant="outline">Indexing</Badge>;
+  }
+
+  if (indexingStatus === KnowledgeBaseResourceStatuses.ERROR) {
+    return <Badge variant="destructive">Error</Badge>;
   }
 
   return (

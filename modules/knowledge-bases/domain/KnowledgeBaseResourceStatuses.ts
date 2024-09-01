@@ -1,4 +1,5 @@
 export enum KnowledgeBaseResourceStatuses {
-  "PENDING" = "pending",
-  "INDEXED" = "indexed",
+  PENDING = "pending",
+  INDEXED = "indexed",
+  ERROR = "error",
 }
