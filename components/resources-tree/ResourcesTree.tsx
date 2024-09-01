@@ -1,5 +1,5 @@
 import { Connection } from "@/modules/connections/domain/Connection";
-import React from "react";
+import React, { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getResourcesByConnectionFromApi } from "@/modules/resources/infrastructure/api/get-resources-by-connection-from-api";
 import { ResourcesTreeRow } from "@/components/resources-tree/ResourcesTreeRow";
@@ -9,24 +9,32 @@ import { ResourcesTreeSelectableContextProvider } from "@/components/resources-t
 import { Separator } from "@/components/ui/separator";
 import { IndexButton } from "@/components/index-button/IndexButton";
 import { KnowledgeBaseContextProvider } from "@/components/knowledge-bases/KnowledgeBaseContext";
+import { ResourcesTreeSearcher } from "@/components/resources-tree/ResourcesTreeSearcher";
+import { Resource } from "@/modules/resources/domain/Resource";
 
 interface Props {
   connection?: Connection;
 }
 
 export const ResourcesTree: React.FC<Props> = ({ connection }) => {
+  const [search, setSearch] = useState<string>("");
+
   const { data: resources = [], isLoading } = useQuery({
     queryKey: ["connection", connection?.id, "resources"],
     queryFn: () => getResourcesByConnectionFromApi(connection?.id ?? ""),
     enabled: !!connection,
   });
 
+  const filteredResources = useMemo(
+    () => Resource.searchByName(resources, search),
+    [resources, search],
+  );
+
   if (!connection) {
     return null;
   }
 
   if (isLoading) {
-    // TODO: Simplify this skeleton with Array.from({ length: 3 }).map
     return (
       <div className="flex flex-col gap-8">
         <Skeleton className="h-[24px] w-[580px]" />
@@ -37,14 +45,17 @@ export const ResourcesTree: React.FC<Props> = ({ connection }) => {
   }
 
   return (
-    <div>
+    <div className="flex flex-col items-end gap-2">
       <ResourcesTreeContextProvider connection={connection} resources={resources}>
         <ResourcesTreeSelectableContextProvider>
           <KnowledgeBaseContextProvider>
-            <Separator />
-            {resources.map((resource) => (
-              <ResourcesTreeRow key={resource.id} resource={resource} level={0} />
-            ))}
+            <ResourcesTreeSearcher value={search} onChange={setSearch} />
+            <div className="w-full">
+              <Separator />
+              {filteredResources.map((resource) => (
+                <ResourcesTreeRow key={resource.id} resource={resource} level={0} search={search} />
+              ))}
+            </div>
             <IndexButton />
           </KnowledgeBaseContextProvider>
         </ResourcesTreeSelectableContextProvider>

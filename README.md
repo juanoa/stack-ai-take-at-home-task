@@ -20,6 +20,7 @@ I detect these main entities: _connections, knowledge bases and resources_. Insi
 - Add tests.
 - The application could have a better UX in the process of create new knowledge base.
 - Add more bonus points features.
+- Lazy loading for subtrees
 
 ## 🚀 Getting Started
 

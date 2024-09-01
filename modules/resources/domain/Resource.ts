@@ -65,4 +65,37 @@ export const Resource = {
     }
     return "none";
   },
+  searchByName: (resources: Array<Resource>, name: string): Array<Resource> => {
+    const unPrunedDirectories = resources.reduce<Array<Resource>>((acc, resource) => {
+      if (resource.name.includes(name)) {
+        return [...acc, resource];
+      }
+
+      if (Resource.isDirectory(resource)) {
+        return [
+          ...acc,
+          {
+            ...resource,
+            children: Resource.searchByName(resource.children, name),
+          },
+        ];
+      }
+
+      return acc;
+    }, []);
+    return Resource.pruneEmptyDirectories(unPrunedDirectories);
+  },
+  pruneEmptyDirectories: (resources: Array<Resource>): Array<Resource> => {
+    return resources.reduce<Array<Resource>>((acc, resource) => {
+      if (Resource.isDirectory(resource)) {
+        const children = Resource.pruneEmptyDirectories(resource.children);
+        if (children.length === 0) {
+          return acc;
+        }
+        return [...acc, { ...resource, children }];
+      }
+
+      return [...acc, resource];
+    }, []);
+  },
 };

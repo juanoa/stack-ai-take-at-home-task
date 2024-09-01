@@ -1,5 +1,5 @@
 "use client";
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Resource } from "@/modules/resources/domain/Resource";
 import { ResourcesTreeRowIcon } from "@/components/resources-tree/ResourcesTreeRowIcon";
 import { ResourcesTreeRowRemoveButton } from "@/components/resources-tree/ResourcesTreeRowRemoveButton";
@@ -11,10 +11,11 @@ import { ResourcesTreeRowIndexingStatusBadge } from "@/components/resources-tree
 
 interface Props {
   resource: Resource;
+  search?: string;
   level: number;
 }
 
-export const ResourcesTreeRow: React.FC<Props> = ({ resource, level }) => {
+export const ResourcesTreeRow: React.FC<Props> = ({ resource, level, search }) => {
   const [isSubTreeOpen, setIsSubTreeOpen] = useState<boolean>(false);
 
   const { onToggleResource, isResourceSelected } = useResourcesTreeSelectableContext();
@@ -23,6 +24,10 @@ export const ResourcesTreeRow: React.FC<Props> = ({ resource, level }) => {
     e.stopPropagation();
     onToggleResource(resource);
   };
+
+  useEffect(() => {
+    setIsSubTreeOpen(!!search);
+  }, [search]);
 
   const isSelected = useMemo(() => isResourceSelected(resource), [isResourceSelected, resource]);
 
@@ -58,7 +63,7 @@ export const ResourcesTreeRow: React.FC<Props> = ({ resource, level }) => {
       {Resource.isDirectory(resource) &&
         isSubTreeOpen &&
         resource.children.map((child) => (
-          <ResourcesTreeRow key={child.id} resource={child} level={level + 1} />
+          <ResourcesTreeRow key={child.id} resource={child} level={level + 1} search={search} />
         ))}
     </div>
   );
