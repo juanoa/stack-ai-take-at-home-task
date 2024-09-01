@@ -3,6 +3,7 @@ import React, { PropsWithChildren, useCallback, useState } from "react";
 import { useResourcesTreeContext } from "@/components/resources-tree/contexts/ResourcesTreeContext";
 
 interface ResourcesTreeSelectableContextValue {
+  selectedFiles: Array<ResourceFile>;
   onToggleResource: (resource: Resource) => void;
   isResourceSelected: (resource: Resource) => boolean | "indeterminate";
 }
@@ -24,20 +25,18 @@ export const useResourcesTreeSelectableContext = () => {
 export const ResourcesTreeSelectableContextProvider: React.FC<PropsWithChildren> = ({
   children,
 }) => {
-  const [selectedResources, setSelectedResources] = useState<Array<ResourceFile>>([]);
-
-  const { resourcesTree } = useResourcesTreeContext();
+  const [selectedFiles, setSelectedFiles] = useState<Array<ResourceFile>>([]);
 
   const onToggleFiles = useCallback(
     (files: Array<ResourceFile>) => {
-      const allFilesWasSelected = files.every((file) => selectedResources.includes(file));
+      const allFilesWasSelected = files.every((file) => selectedFiles.includes(file));
       if (allFilesWasSelected) {
-        setSelectedResources(selectedResources.filter((file) => !files.includes(file)));
+        setSelectedFiles(selectedFiles.filter((file) => !files.includes(file)));
       } else {
-        setSelectedResources([...selectedResources, ...files]);
+        setSelectedFiles([...selectedFiles, ...files]);
       }
     },
-    [selectedResources],
+    [selectedFiles],
   );
 
   const onToggleResource = useCallback(
@@ -55,10 +54,10 @@ export const ResourcesTreeSelectableContextProvider: React.FC<PropsWithChildren>
   const isResourceSelected = useCallback(
     (resource: Resource): boolean | "indeterminate" => {
       if (Resource.isFile(resource)) {
-        return selectedResources.includes(resource);
+        return selectedFiles.includes(resource);
       }
       if (Resource.isDirectory(resource)) {
-        const belongStatus = Resource.filesBelongToDirectory(resource, selectedResources);
+        const belongStatus = Resource.filesBelongToDirectory(resource, selectedFiles);
         if (belongStatus === "every") {
           return true;
         }
@@ -68,11 +67,13 @@ export const ResourcesTreeSelectableContextProvider: React.FC<PropsWithChildren>
       }
       return false;
     },
-    [selectedResources],
+    [selectedFiles],
   );
 
   return (
-    <ResourcesTreeSelectableContext.Provider value={{ onToggleResource, isResourceSelected }}>
+    <ResourcesTreeSelectableContext.Provider
+      value={{ selectedFiles, onToggleResource, isResourceSelected }}
+    >
       {children}
     </ResourcesTreeSelectableContext.Provider>
   );
