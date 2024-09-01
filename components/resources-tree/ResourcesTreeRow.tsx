@@ -6,6 +6,7 @@ import { ResourcesTreeRowRemoveButton } from "@/components/resources-tree/Resour
 import { Checkbox } from "@/components/ui/checkbox";
 import { useResourcesTreeSelectableContext } from "@/components/resources-tree/contexts/ResourceTreeSelectableContext";
 import { Separator } from "@/components/ui/separator";
+import { ResourcesTreeDirectoryCounter } from "@/components/resources-tree/ResourcesTreeRowDirectoryCounter";
 
 interface Props {
   resource: Resource;
@@ -42,6 +43,9 @@ export const ResourcesTreeRow: React.FC<Props> = ({ resource, level }) => {
             />
             <ResourcesTreeRowIcon resource={resource} isSubTreeOpen={isSubTreeOpen} />
             {resource.name}
+            {Resource.isDirectory(resource) && (
+              <ResourcesTreeDirectoryCounter resource={resource} />
+            )}
           </div>
           <ResourcesTreeRowRemoveButton resource={resource} />
         </div>
