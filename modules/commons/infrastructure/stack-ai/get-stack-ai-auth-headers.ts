@@ -1,8 +1,12 @@
 const path = "/auth/v1/token?grant_type=password";
 
-export const getStackAiAuthHeaders = async (): Promise<
-  Record<string, string>
-> => {
+type AuthHeaders = {
+  value: string;
+  maxAge: number;
+};
+
+export const getStackAiAuthHeaders = async (): Promise<AuthHeaders> => {
+  console.warn("Getting new token...");
   if (
     !process.env.AUTH_URL ||
     !process.env.AUTH_API_KEY ||
@@ -31,9 +35,10 @@ export const getStackAiAuthHeaders = async (): Promise<
     throw new Error("Failed to get Stack AI auth headers");
   }
 
-  const { access_token } = await response.json();
+  const { access_token, expires_in } = await response.json();
 
   return {
-    Authorization: `Bearer ${access_token}`,
+    value: access_token,
+    maxAge: expires_in,
   };
 };
