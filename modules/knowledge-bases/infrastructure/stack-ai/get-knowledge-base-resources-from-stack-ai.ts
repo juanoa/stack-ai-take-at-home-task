@@ -22,7 +22,7 @@ export const getKnowledgeBaseResourcesFromStackAi = async (
       const resourceDtos = resources as Array<any>;
       const result = await Promise.all(
         resourceDtos.map(async (resourceDto) => {
-          const isDirectory = resourceDtos[0].inode_type === "directory";
+          const isDirectory = resourceDto.inode_type === "directory";
           if (!isDirectory) {
             return {
               id: resourceDto.resource_id as string,
