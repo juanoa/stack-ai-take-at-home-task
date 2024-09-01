@@ -5,14 +5,14 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createAndSyncKnowledgeBaseFromApi } from "@/modules/knowledge-bases/infrastructure/api/crate-and-sync-knowledge-base-from-api";
 import { useResourcesTreeContext } from "@/components/resources-tree/contexts/ResourcesTreeContext";
 import { getKnowledgeBaseFromApi } from "@/modules/knowledge-bases/infrastructure/api/get-knowledge-base-from-api";
-import { KnowledgeBaseResourceStatuses } from "@/modules/knowledge-bases/domain/KnowledgeBaseResourceStatuses";
 import { KnowledgeBaseStatusModal } from "@/components/knowledge-bases/KnowledgeBaseStatusModal";
-import { KnowledgeBaseResource } from "@/modules/knowledge-bases/domain/KnowledgeBaseResource";
+import { KnowledgeBaseResourceStatuses } from "@/modules/knowledge-bases/domain/KnowledgeBaseResourceStatuses";
 
 interface KnowledgeBaseContextValue {
   knowledgeBase?: KnowledgeBase;
   indexResources: (resources: Array<Resource>) => Promise<void>;
   isPendingCreateKnowledgeBase: boolean;
+  getIndexingStatus: (resourceId: Resource["id"]) => KnowledgeBaseResourceStatuses | undefined;
 }
 
 export const KnowledgeBaseContext = React.createContext<KnowledgeBaseContextValue | undefined>(
@@ -74,9 +74,17 @@ export const KnowledgeBaseContextProvider: React.FC<PropsWithChildren> = ({ chil
     [triggerCreateAndSyncKnowledgeBase],
   );
 
+  const getIndexingStatus = useCallback(
+    (resourceId: Resource["id"]) => {
+      if (!knowledgeBase) return;
+      return KnowledgeBase.getStatusByResourceId(knowledgeBase, resourceId);
+    },
+    [knowledgeBase],
+  );
+
   return (
     <KnowledgeBaseContext.Provider
-      value={{ indexResources, isPendingCreateKnowledgeBase, knowledgeBase }}
+      value={{ indexResources, isPendingCreateKnowledgeBase, knowledgeBase, getIndexingStatus }}
     >
       {children}
       <KnowledgeBaseStatusModal knowledgeBase={knowledgeBase} />

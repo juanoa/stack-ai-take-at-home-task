@@ -1,5 +1,6 @@
 import { KnowledgeBaseResource } from "@/modules/knowledge-bases/domain/KnowledgeBaseResource";
 import { Resource } from "@/modules/resources/domain/Resource";
+import { KnowledgeBaseResourceStatuses } from "@/modules/knowledge-bases/domain/KnowledgeBaseResourceStatuses";
 
 export type KnowledgeBase = {
   id: string;
@@ -20,4 +21,9 @@ export const KnowledgeBase = {
   },
   thereArePendingResources: (knowledgeBase: KnowledgeBase): boolean =>
     knowledgeBase.resources.some(KnowledgeBaseResource.isPending),
+  getStatusByResourceId: (
+    knowledgeBase: KnowledgeBase,
+    resourceId: Resource["id"],
+  ): KnowledgeBaseResourceStatuses | undefined =>
+    knowledgeBase.resources.find((resource) => resource.id === resourceId)?.status,
 };

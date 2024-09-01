@@ -7,6 +7,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useResourcesTreeSelectableContext } from "@/components/resources-tree/contexts/ResourceTreeSelectableContext";
 import { Separator } from "@/components/ui/separator";
 import { ResourcesTreeDirectoryCounter } from "@/components/resources-tree/ResourcesTreeRowDirectoryCounter";
+import { ResourcesTreeRowIndexingStatus } from "@/components/resources-tree/ResourcesTreeRowIndexingStatus";
 
 interface Props {
   resource: Resource;
@@ -47,7 +48,10 @@ export const ResourcesTreeRow: React.FC<Props> = ({ resource, level }) => {
               <ResourcesTreeDirectoryCounter resource={resource} />
             )}
           </div>
-          <ResourcesTreeRowRemoveButton resource={resource} />
+          <div className="flex flex-row items-center gap-6">
+            <ResourcesTreeRowIndexingStatus resource={resource} />
+            <ResourcesTreeRowRemoveButton resource={resource} />
+          </div>
         </div>
       </div>
       <Separator />
