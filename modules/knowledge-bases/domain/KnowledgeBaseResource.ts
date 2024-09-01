@@ -12,4 +12,6 @@ export const KnowledgeBaseResource = {
   }),
   isPending: (resource: KnowledgeBaseResource): boolean =>
     resource.status === KnowledgeBaseResourceStatuses.PENDING,
+  sortById: (a: KnowledgeBaseResource, b: KnowledgeBaseResource): number =>
+    a.id.localeCompare(b.id),
 };
