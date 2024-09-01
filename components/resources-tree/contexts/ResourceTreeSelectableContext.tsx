@@ -6,6 +6,7 @@ interface ResourcesTreeSelectableContextValue {
   onToggleResource: (resource: Resource) => void;
   onUnselectResource: (resource: Resource) => void;
   isResourceSelected: (resource: Resource) => boolean | "indeterminate";
+  clearSelection: () => void;
 }
 
 export const ResourcesTreeSelectableContext = React.createContext<
@@ -84,9 +85,19 @@ export const ResourcesTreeSelectableContextProvider: React.FC<PropsWithChildren>
     [selectedFiles],
   );
 
+  const clearSelection = useCallback(() => {
+    setSelectedFiles([]);
+  }, []);
+
   return (
     <ResourcesTreeSelectableContext.Provider
-      value={{ selectedFiles, onToggleResource, isResourceSelected, onUnselectResource }}
+      value={{
+        selectedFiles,
+        onToggleResource,
+        isResourceSelected,
+        onUnselectResource,
+        clearSelection,
+      }}
     >
       {children}
     </ResourcesTreeSelectableContext.Provider>

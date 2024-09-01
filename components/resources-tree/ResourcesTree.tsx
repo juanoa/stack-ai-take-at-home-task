@@ -8,6 +8,7 @@ import { ResourcesTreeContextProvider } from "@/components/resources-tree/contex
 import { ResourcesTreeSelectableContextProvider } from "@/components/resources-tree/contexts/ResourceTreeSelectableContext";
 import { Separator } from "@/components/ui/separator";
 import { IndexButton } from "@/components/index-button/IndexButton";
+import { KnowledgeBaseContextProvider } from "@/components/knowledge-bases/KnowledgeBaseContext";
 
 interface Props {
   connection?: Connection;
@@ -39,11 +40,13 @@ export const ResourcesTree: React.FC<Props> = ({ connection }) => {
     <div>
       <ResourcesTreeContextProvider connection={connection} resources={resources}>
         <ResourcesTreeSelectableContextProvider>
-          <Separator />
-          {resources.map((resource) => (
-            <ResourcesTreeRow key={resource.id} resource={resource} level={0} />
-          ))}
-          <IndexButton />
+          <KnowledgeBaseContextProvider>
+            <Separator />
+            {resources.map((resource) => (
+              <ResourcesTreeRow key={resource.id} resource={resource} level={0} />
+            ))}
+            <IndexButton />
+          </KnowledgeBaseContextProvider>
         </ResourcesTreeSelectableContextProvider>
       </ResourcesTreeContextProvider>
     </div>
