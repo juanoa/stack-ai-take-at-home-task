@@ -19,10 +19,7 @@ export const Resource = {
   isDirectory: (resource: Resource): resource is ResourceDirectory => {
     return (resource as ResourceDirectory).type === "directory";
   },
-  deleteResourceById: (
-    resources: Array<Resource>,
-    resourceId: string,
-  ): Array<Resource> =>
+  deleteResourceById: (resources: Array<Resource>, resourceId: string): Array<Resource> =>
     resources.reduce((acc, resource) => {
       if (resource.id === resourceId) {
         return acc;
@@ -33,14 +30,39 @@ export const Resource = {
           ...acc,
           {
             ...resource,
-            children: Resource.deleteResourceById(
-              resource.children,
-              resourceId,
-            ),
+            children: Resource.deleteResourceById(resource.children, resourceId),
           },
         ];
       }
 
       return [...acc, resource];
     }, [] as Array<Resource>),
+  getAllSubFiles: (resource: ResourceDirectory): Array<ResourceFile> =>
+    resource.children.reduce<Array<ResourceFile>>((acc, child) => {
+      if (Resource.isFile(child)) {
+        return [...acc, child];
+      }
+
+      if (Resource.isDirectory(child)) {
+        return [...acc, ...Resource.getAllSubFiles(child)];
+      }
+
+      return acc;
+    }, []),
+  filesBelongToDirectory: (
+    directory: ResourceDirectory,
+    files: Array<ResourceFile>,
+  ): "none" | "some" | "every" => {
+    const subFiles = Resource.getAllSubFiles(directory);
+    if (subFiles.length === 0) {
+      return "none";
+    }
+    if (subFiles.every((file) => files.includes(file))) {
+      return "every";
+    }
+    if (subFiles.some((file) => files.includes(file))) {
+      return "some";
+    }
+    return "none";
+  },
 };

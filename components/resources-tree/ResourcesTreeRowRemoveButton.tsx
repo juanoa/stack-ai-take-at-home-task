@@ -1,7 +1,7 @@
 import React from "react";
 import { Resource } from "@/modules/resources/domain/Resource";
 import { Trash2 } from "lucide-react";
-import { useResourcesTreeContext } from "@/components/resources-tree/ResourcesTreeContext";
+import { useResourcesTreeContext } from "@/components/resources-tree/contexts/ResourcesTreeContext";
 import { useQueryClient } from "@tanstack/react-query";
 
 interface Props {

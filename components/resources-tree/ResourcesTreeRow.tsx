@@ -1,9 +1,10 @@
 "use client";
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { Resource } from "@/modules/resources/domain/Resource";
 import { ResourcesTreeRowIcon } from "@/components/resources-tree/ResourcesTreeRowIcon";
 import { ResourcesTreeRowRemoveButton } from "@/components/resources-tree/ResourcesTreeRowRemoveButton";
 import { Checkbox } from "@/components/ui/checkbox";
+import { useResourcesTreeSelectableContext } from "@/components/resources-tree/contexts/ResourceTreeSelectableContext";
 
 interface Props {
   resource: Resource;
@@ -12,6 +13,15 @@ interface Props {
 
 export const ResourcesTreeRow: React.FC<Props> = ({ resource, level }) => {
   const [isSubTreeOpen, setIsSubTreeOpen] = useState<boolean>(false);
+
+  const { onToggleResource, isResourceSelected } = useResourcesTreeSelectableContext();
+
+  const handleOnToggleCheckbox = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onToggleResource(resource);
+  };
+
+  const isSelected = useMemo(() => isResourceSelected(resource), [isResourceSelected, resource]);
 
   return (
     <div>
@@ -24,11 +34,12 @@ export const ResourcesTreeRow: React.FC<Props> = ({ resource, level }) => {
           style={{ marginLeft: `${level * 20}px` }}
         >
           <div className="flex items-center gap-4">
-            <Checkbox className="opacity-0 transition-opacity group-hover/icons:opacity-100" />
-            <ResourcesTreeRowIcon
-              resource={resource}
-              isSubTreeOpen={isSubTreeOpen}
+            <Checkbox
+              className={`${isSelected ? "opacity-100" : "opacity-0"} transition-opacity group-hover/icons:opacity-100`}
+              onClick={handleOnToggleCheckbox}
+              checked={isSelected}
             />
+            <ResourcesTreeRowIcon resource={resource} isSubTreeOpen={isSubTreeOpen} />
             {resource.name}
           </div>
           <ResourcesTreeRowRemoveButton resource={resource} />

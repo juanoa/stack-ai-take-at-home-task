@@ -4,7 +4,8 @@ import { useQuery } from "@tanstack/react-query";
 import { getResourcesByConnectionFromApi } from "@/modules/resources/infrastructure/api/get-resources-by-connection-from-api";
 import { ResourcesTreeRow } from "@/components/resources-tree/ResourcesTreeRow";
 import { Skeleton } from "@/components/ui/loading";
-import { ResourcesTreeContextProvider } from "@/components/resources-tree/ResourcesTreeContext";
+import { ResourcesTreeContextProvider } from "@/components/resources-tree/contexts/ResourcesTreeContext";
+import { ResourcesTreeSelectableContextProvider } from "@/components/resources-tree/contexts/ResourceTreeSelectableContext";
 
 interface Props {
   connection?: Connection;
@@ -38,9 +39,11 @@ export const ResourcesTree: React.FC<Props> = ({ connection }) => {
         connection={connection}
         resources={resources}
       >
-        {resources.map((resource) => (
-          <ResourcesTreeRow key={resource.id} resource={resource} level={0} />
-        ))}
+        <ResourcesTreeSelectableContextProvider>
+          {resources.map((resource) => (
+            <ResourcesTreeRow key={resource.id} resource={resource} level={0} />
+          ))}
+        </ResourcesTreeSelectableContextProvider>
       </ResourcesTreeContextProvider>
     </div>
   );
